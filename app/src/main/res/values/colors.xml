@@ -3,4 +3,17 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <color name="_empty">#00000000</color>
+    <color name="_main_background">#0C0C3E</color>
+    <color name="_main_background_1">#2F0954</color>
+    <color name="_main_primary">#EE0070</color>
+    <color name="_support_icon">#FFF</color>
+    <color name="_support_unselected">#FFF</color>
+    <color name="_support_disabled">#DB3794</color>
+
+    <!-- CALENDER COLORS -->
+    <color name="_calender_week">#E60872</color>
+    <color name="_calender_day">#635A8E</color>
+
 </resources>
