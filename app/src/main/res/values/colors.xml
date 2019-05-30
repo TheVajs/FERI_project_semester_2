@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#EE0070</color>
+    <color name="colorPrimaryDark">#EE0070</color>
     <color name="colorAccent">#D81B60</color>
 
     <color name="_empty">#00000000</color>
@@ -15,5 +15,6 @@
     <!-- CALENDER COLORS -->
     <color name="_calender_week">#E60872</color>
     <color name="_calender_day">#635A8E</color>
-
+    <color name="_calender_selected_dark">#94054a</color>
+    <color name="_calender_selected_events"> #fa6bb0</color>
 </resources>
