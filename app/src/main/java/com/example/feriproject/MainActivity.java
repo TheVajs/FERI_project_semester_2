@@ -15,7 +15,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -51,11 +55,15 @@ public class MainActivity extends AppCompatActivity {
     /* simple UI elements */
     Button buttonAdd;
     Button buttonRemove;
+    ImageButton buttonFloatinAdd;
     private static int COLOR_SELECTED = Color.CYAN;
     private static int COLOR_NOT_SELECTED = Color.WHITE;
+    private Animation scale;
 
     /* MY DATA */
+    public static final int EVENT_CODE = 1;
     private static long selectedTimeStamp = 0;
+    private static int RECYCLER_COUNT = 0;
     private static ArrayList<Event> currentEvents = new ArrayList<>();
 
     @Override
@@ -67,21 +75,30 @@ public class MainActivity extends AppCompatActivity {
         recyclerItems = new ArrayList<>();
         recyclerItems.add(new RecyclerItem(0, "Go shoping", "- buy something"));
 
-        /* build UI */
+        /* BUILD UI */
+        scale = AnimationUtils.loadAnimation(this, R.anim._scale);
         buttonAdd = findViewById(R.id.buttonAdd);
         buttonRemove = findViewById(R.id.buttonRemove);
+        buttonFloatinAdd = findViewById(R.id.floatingAdd);
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonClickLoadEventNew(selectedTimeStamp);
+                buttonClickLoadEventNew();
             }
         });
-
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+        buttonFloatinAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((ImageButton)v).startAnimation(scale);
+
+                buttonClickLoadEventNew();
             }
         });
 
@@ -93,14 +110,39 @@ public class MainActivity extends AppCompatActivity {
     public void buttonClickLoadEventChange(int position) {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
         RecyclerItem item = recyclerItems.get(position);
-        data.putExtra("Name", item.getName() + "");
-        data.putExtra("Description", item.getContent() + "");
-        this.startActivity(data);
+        data.putExtra("timeStamp", selectedTimeStamp);
+        data.putExtra("name", recyclerItems.get(position).getName() +"");
+        data.putExtra("color", recyclerItems.get(position).getBackgroundColor());
+        this.startActivityForResult(data, EVENT_CODE);
     }
-    public void buttonClickLoadEventNew(long timeStamp) {
+    public void buttonClickLoadEventNew() {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
-        if(timeStamp != 0) data.putExtra("timeStamp", timeStamp);
-        this.startActivity(data);
+        if(selectedTimeStamp != 0) data.putExtra("timeStamp", selectedTimeStamp);
+        this.startActivityForResult(data, EVENT_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EVENT_CODE) {
+            if (resultCode == RESULT_OK) {
+
+                long ts = data.getLongExtra("timeStamp", -1);
+                String name = data.getStringExtra("name");
+                int colNumber = data.getIntExtra("color", -1);
+                Log.d(TAG, "onActivityResult: results: " + ts + " " + colNumber);
+
+                if(ts != -1) {
+                    Event newEvent = new Event(getResources().getColor(colNumber), ts, name);
+                    compactCalendarView.addEvent(newEvent);
+                    addItem(RECYCLER_COUNT++);
+                } else {
+                    Log.d(TAG, "onActivityResult: timeStamp was not received! " + ts + " " + colNumber);
+                }
+
+            }
+        }
     }
 
     private void addItem(int position) {

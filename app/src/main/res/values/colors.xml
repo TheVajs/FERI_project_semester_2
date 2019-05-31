@@ -19,7 +19,7 @@
     <color name="_calender_selected_events">#fa6bb0</color>
 
     <!-- event colors -->
-    <color name="_calender_basic">#A11054</color>
+    <color name="_calender_basic">#60002d</color>
     <color name="_calender_important">#0CFAE1</color>
     <color name="_calender_critical">#FAF723</color>
 

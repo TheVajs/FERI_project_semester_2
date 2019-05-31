@@ -152,6 +152,7 @@
          android:layout_marginTop="8dp"
          android:layout_marginBottom="8dp"
          android:text="Create"
+         android:onClick="buttonOnClickSave"
          android:textSize="@dimen/_font_size_med"
          android:textColor="@color/_main_primary"
          android:background="@drawable/_custom_button_style_shape"
