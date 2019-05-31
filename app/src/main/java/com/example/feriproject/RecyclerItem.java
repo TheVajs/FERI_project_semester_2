@@ -11,6 +11,14 @@ public class RecyclerItem {
         this.content = content;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public int getImageResource() {
         return mImageResource;
     }
