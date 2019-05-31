@@ -18,8 +18,18 @@
     <color name="_calender_selected_dark">#720331</color>
     <color name="_calender_selected_events">#fa6bb0</color>
 
+    <!-- event colors -->
+    <color name="_calender_basic">#A11054</color>
+    <color name="_calender_important">#0CFAE1</color>
+    <color name="_calender_critical">#FAF723</color>
+
     <!-- BUTTONS -->
     <color name="_button_darker">#bf005b</color>
     <color name="_button_light">#E60872</color>
     <color name="_button_lighter">#f71883</color>
+
+    <!-- text fields -->
+    <color name="_field_white">#FFF</color>
+    <color name="_field_hint">#f9a2c6</color>
+
 </resources>

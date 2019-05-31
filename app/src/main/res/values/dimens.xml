@@ -16,4 +16,7 @@
     <dimen name="_font_size_big">26sp</dimen>
     <dimen name="_font_size_med">20sp</dimen>
     <dimen name="_font_size_sma">12sp</dimen>
+
+    <dimen name="_image_button_width">84dp</dimen>
+    <dimen name="_image_button_height">74dp</dimen>
 </resources>
