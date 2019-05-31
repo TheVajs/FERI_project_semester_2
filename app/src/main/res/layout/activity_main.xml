@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="View all"
-            android:background="@color/_button_lighter"
+            android:background="@drawable/_custom_button_style"
             android:textColor="@android:color/white"
             style="?android:attr/buttonBarButtonStyle"/>
 
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Add"
-            android:background="@color/_button_light"
+            android:background="@drawable/_custom_button_style"
             android:textColor="@android:color/white"
             style="?android:attr/buttonBarButtonStyle"/>
 
@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Remove"
-            android:background="@color/_button_light"
+            android:background="@drawable/_custom_button_style"
             android:textColor="@android:color/white"
             style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>

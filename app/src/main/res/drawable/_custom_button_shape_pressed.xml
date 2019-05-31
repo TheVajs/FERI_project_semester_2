@@ -7,7 +7,7 @@
                 android:radius="100dp"
                 />
             <solid
-                android:color="#FFF"
+                android:color="@color/_button_darker"
                 />
             <padding
                 android:left="0dp"
@@ -16,8 +16,8 @@
                 android:bottom="0dp"
                 />
             <size
-                android:width="270dp"
-                android:height="60dp"
+                android:width="280dp"
+                android:height="70dp"
                 />
         </shape>
     </item>

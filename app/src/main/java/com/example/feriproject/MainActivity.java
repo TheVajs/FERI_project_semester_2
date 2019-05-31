@@ -2,6 +2,7 @@ package com.example.feriproject;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     // HELP
     // https://www.youtube.com/watch?v=bhhs4bwYyhc&list=PLrnPJCHvNZuBtTYUuc5Pyo4V7xZ2HNtf4&index=4
     private RecyclerView mRecyclerView;
-    private myAdapter mAdapter;
+    private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private ArrayList<RecyclerItem> recyclerItems;
@@ -50,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
     /* simple UI elements */
     Button buttonAdd;
     Button buttonRemove;
-    private static int COUNT = 0;
     private static int COLOR_SELECTED = Color.CYAN;
     private static int COLOR_NOT_SELECTED = Color.WHITE;
 
     /* MY DATA */
-
+    private static long selectedTimeStamp = 0;
+    private static ArrayList<Event> currentEvents = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +65,42 @@ public class MainActivity extends AppCompatActivity {
 
         /* ADD TO RECYCLER LIST */
         recyclerItems = new ArrayList<>();
-        COUNT++;
         recyclerItems.add(new RecyclerItem(0, "Go shoping", "- buy something"));
+
+        /* build UI */
+        buttonAdd = findViewById(R.id.buttonAdd);
+        buttonRemove = findViewById(R.id.buttonRemove);
+
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buttonClickLoadEventNew(selectedTimeStamp);
+            }
+        });
+
+        buttonRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         mainActivity = this;  // static reference for static functions
         initializeCalender(); // initialize for CUSTOM CALENDER
         buildRecyclerView();  //
+    }
+
+    public void buttonClickLoadEventChange(int position) {
+        Intent data = new Intent(this.getBaseContext(), EventActivity.class);
+        RecyclerItem item = recyclerItems.get(position);
+        data.putExtra("Name", item.getName() + "");
+        data.putExtra("Description", item.getContent() + "");
+        this.startActivity(data);
+    }
+    public void buttonClickLoadEventNew(long timeStamp) {
+        Intent data = new Intent(this.getBaseContext(), EventActivity.class);
+        if(timeStamp != 0) data.putExtra("timeStamp", timeStamp);
+        this.startActivity(data);
     }
 
     private void addItem(int position) {
@@ -80,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "addItem (exception): " + e.getMessage());
         }
     }
-
     private void removeItem(int position) {
         try {
             recyclerItems.remove(position);
@@ -89,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "removeItem (exception): " + e.getMessage());
         }
     }
-
     private void changeItem(int position, String name) {
         try {
             recyclerItems.get(position).setName(name);
@@ -98,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "changeItem (exception): " + e.getMessage());
         }
     }
-
     private void selectItem(int position) {
         try {
             // clear colors
@@ -113,42 +141,28 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "changeItem (exception): " + e.getMessage());
         }
     }
+
     private void buildRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mAdapter = new myAdapter(recyclerItems);
+        mAdapter = new MyAdapter(recyclerItems);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        mAdapter.setOnItemClickListener(new myAdapter.OnItemClickListener() {
+        mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 selectItem(position);
             }
-        });
 
-        /* build UI */
-        buttonAdd = findViewById(R.id.buttonAdd);
-        buttonRemove = findViewById(R.id.buttonRemove);
-
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                addItem(++COUNT);
-            }
-        });
-
-        buttonRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(COUNT > 0)
-                    removeItem(--COUNT);
+            public void onItemLongClick(int position) {
+                buttonClickLoadEventChange(position);
             }
         });
     }
-
     private void initializeCalender() {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
@@ -171,7 +185,9 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Day was clicked: " + myDateFormat.format(date) + " with events " + events);
 
-                List<Event> currentEvents = compactCalendarView.getEvents(date);
+                selectedTimeStamp = dateClicked.getTime();
+
+                /*List<Event> currentEvents = compactCalendarView.getEvents(date);
                 if(currentEvents != null && currentEvents.size() != 0) {
                     initCustomToast(currentEvents.get(0).getData() + "");
                 }
@@ -180,8 +196,9 @@ public class MainActivity extends AppCompatActivity {
 
                     Event newEvent = new Event(Color.RED , dateClicked.getTime(), "My day");
                     compactCalendarView.addEvent(newEvent);
-                }
+                } */
             }
+
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {

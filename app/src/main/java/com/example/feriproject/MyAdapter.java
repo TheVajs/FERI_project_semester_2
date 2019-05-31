@@ -11,12 +11,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class myAdapter extends RecyclerView.Adapter<myAdapter.MyViewHolder> {
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private ArrayList<RecyclerItem> mItemList;
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onItemLongClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -47,12 +48,26 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.MyViewHolder> {
                             listener.onItemClick(position);
                     }
                 }
+
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(listener != null) {
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION)
+                            listener.onItemLongClick(position);
+                    }
+
+                    return true;
+                }
             });
         }
     }
 
 
-    public myAdapter(ArrayList<RecyclerItem> list) {
+    public MyAdapter(ArrayList<RecyclerItem> list) {
         mItemList = list;
     }
 

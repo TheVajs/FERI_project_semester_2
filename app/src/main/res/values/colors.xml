@@ -24,6 +24,7 @@
     <color name="_calender_critical">#FAF723</color>
 
     <!-- BUTTONS -->
+    <color name="_button_dark">#91285a</color>
     <color name="_button_darker">#bf005b</color>
     <color name="_button_light">#E60872</color>
     <color name="_button_lighter">#f71883</color>

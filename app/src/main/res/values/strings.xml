@@ -8,5 +8,5 @@
     <!-- EVENT ACTIVITY STRINGS -->
     <string name="_event_activity_title">Create new activity</string>
     <string name="_event_activity_field_name">Activity name</string>
-    <string name="_event_activity_field_content">Description</string>
+    <string name="_event_activity_field_date">Date</string>
 </resources>
