@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.EventLog;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,6 +20,7 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -25,20 +28,39 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG;
+    /* custom calender */
     public static final SimpleDateFormat myDateFormat;
     public static Toast toast;
     static  {
         myDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         TAG = "log";
     }
-
     private CompactCalendarView compactCalendarView;
+
+    /* recycler view */
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initializeCalander();
 
+        ArrayList<RecyclerItem> eventList = new ArrayList<>();
+        eventList.add(new RecyclerItem(0, "Go shoping", "- buy something"));
+
+        mRecyclerView = findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mAdapter = new myAdapter(eventList);
+
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void initializeCalander() {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setTitle(null);
@@ -46,9 +68,10 @@ public class MainActivity extends AppCompatActivity {
         compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(true);
 
+        /*
         // set event
         Event newEvent = new Event(Color.RED , 1559339425, "My day");
-        compactCalendarView.addEvent(newEvent);
+        compactCalendarView.addEvent(newEvent); */
 
         // on day
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
@@ -71,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Month was scrolled to: " + firstDayOfNewMonth);
             }
         });
-
     }
 
     public void initCustomToast(String content) {
