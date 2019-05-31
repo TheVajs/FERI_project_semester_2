@@ -1,6 +1,7 @@
 package com.example.feriproject;
 
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.MyViewHolder> {
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
+        public CardView cardView;
         public ImageView mImageView;
         public TextView mName;
         public TextView mContent;
@@ -31,6 +33,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.MyViewHolder> {
         public MyViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
 
+            cardView = itemView.findViewById(R.id.cardView);
             mImageView = itemView.findViewById(R.id.imageView);
             mName = itemView.findViewById(R.id.name);
             mContent = itemView.findViewById(R.id.content);
@@ -68,6 +71,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.MyViewHolder> {
         //myViewHolder.mImageView.setImageResource(currentItem.getImageResource());
         myViewHolder.mName.setText(currentItem.getName());
         myViewHolder.mContent.setText(currentItem.getContent());
+        myViewHolder.cardView.setBackgroundColor(currentItem.getBackgroundColor());
     }
 
     @Override

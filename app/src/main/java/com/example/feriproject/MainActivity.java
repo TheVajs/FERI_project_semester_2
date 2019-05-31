@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "log";
     /* custom calender */
-    public static final SimpleDateFormat myDateFormat = new SimpleDateFormat("dd:MM:yyyy", Locale.getDefault());;
+    public static final SimpleDateFormat myDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());;
     public static Toast toast;
     public static MainActivity mainActivity;
     private CompactCalendarView compactCalendarView;
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     Button buttonAdd;
     Button buttonRemove;
     private static int COUNT = 0;
+    private static int COLOR_SELECTED = Color.CYAN;
+    private static int COLOR_NOT_SELECTED = Color.WHITE;
 
     /* MY DATA */
 
@@ -97,6 +99,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void selectItem(int position) {
+        try {
+            // clear colors
+
+            if(recyclerItems.get(position).getBackgroundColor() == COLOR_SELECTED)
+                recyclerItems.get(position).setBackgroundColor(COLOR_NOT_SELECTED);
+            else
+                recyclerItems.get(position).setBackgroundColor(COLOR_SELECTED);
+
+            mAdapter.notifyItemChanged(position);
+        } catch (Exception e) {
+            Log.d(TAG, "changeItem (exception): " + e.getMessage());
+        }
+    }
     private void buildRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -109,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new myAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                changeItem(position, "Clicked");
+                selectItem(position);
             }
         });
 
@@ -155,10 +171,16 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Day was clicked: " + myDateFormat.format(date) + " with events " + events);
 
-                initCustomToast(myDateFormat.format(date) + "");
+                List<Event> currentEvents = compactCalendarView.getEvents(date);
+                if(currentEvents != null && currentEvents.size() != 0) {
+                    initCustomToast(currentEvents.get(0).getData() + "");
+                }
+                else {
+                    initCustomToast(myDateFormat.format(date) + "");
 
-                Event newEvent = new Event(Color.RED , dateClicked.getTime(), "My day");
-                compactCalendarView.addEvent(newEvent);
+                    Event newEvent = new Event(Color.RED , dateClicked.getTime(), "My day");
+                    compactCalendarView.addEvent(newEvent);
+                }
             }
 
             @Override

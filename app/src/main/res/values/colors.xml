@@ -14,7 +14,12 @@
 
     <!-- CALENDER COLORS -->
     <color name="_calender_week">#E60872</color>
-    <color name="_calender_day">#635A8E</color>
-    <color name="_calender_selected_dark">#94054a</color>
-    <color name="_calender_selected_events"> #fa6bb0</color>
+    <color name="_calender_current_day">#E60872</color>
+    <color name="_calender_selected_dark">#720331</color>
+    <color name="_calender_selected_events">#fa6bb0</color>
+
+    <!-- BUTTONS -->
+    <color name="_button_darker">#bf005b</color>
+    <color name="_button_light">#E60872</color>
+    <color name="_button_lighter">#f71883</color>
 </resources>

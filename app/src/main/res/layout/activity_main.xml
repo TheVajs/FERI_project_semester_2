@@ -15,8 +15,8 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         app:compactCalendarBackgroundColor="#94054a"
-        app:compactCalendarCurrentDayBackgroundColor="@color/_calender_week"
-        app:compactCalendarCurrentSelectedDayBackgroundColor="@color/_calender_week"
+        app:compactCalendarCurrentDayBackgroundColor="@color/_calender_current_day"
+        app:compactCalendarCurrentSelectedDayBackgroundColor="@color/_calender_selected_dark"
         app:compactCalendarMultiEventIndicatorColor="#fff"
         app:compactCalendarTargetHeight="250dp"
         app:compactCalendarTextColor="#fff"
@@ -48,6 +48,15 @@
         app:layout_constraintTop_toBottomOf="@+id/compactcalendar_view"
         app:layout_constraintVertical_bias="0.0">
 
+        <Button
+            android:id="@+id/buttonAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="View all"
+            android:background="@color/_button_lighter"
+            android:textColor="@android:color/white"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/buttonAdd"
@@ -55,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Add"
-            android:background="@color/_calender_week"
+            android:background="@color/_button_light"
             android:textColor="@android:color/white"
             style="?android:attr/buttonBarButtonStyle"/>
 
@@ -65,7 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Remove"
-            android:background="@color/_calender_week"
+            android:background="@color/_button_light"
             android:textColor="@android:color/white"
             style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>

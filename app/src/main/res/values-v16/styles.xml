@@ -3,14 +3,14 @@
     <style name="CalenderViewCustom" parent="Theme.AppCompat">
         <item name="colorAccent">@color/_calender_selected_dark</item> <!-- BUTTON -->
         <item name="colorPrimary">@color/_support_icon</item>
-        <item name="android:textColorPrimary">@color/_calender_day</item>
+        <item name="android:textColorPrimary">@color/_calender_current_day</item>
         <item name="android:fontFamily">sans-serif-black</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="CalenderViewDateCustomText" parent="android:TextAppearance.DeviceDefault.Small">
-        <item name="android:textColor">@color/_calender_day</item>
+        <item name="android:textColor">@color/_calender_current_day</item>
         <item name="android:fontFamily">sans-serif-black</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
