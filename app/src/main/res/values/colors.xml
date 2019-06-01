@@ -34,4 +34,7 @@
     <color name="_field_white">#FFF</color>
     <color name="_field_hint">#f9a2c6</color>
 
+    <!-- RECYCLER -->
+    <color name="_recycler_selected">#f9a2c6</color>
+    <color name="_recycler_unselected">#FFF</color>
 </resources>

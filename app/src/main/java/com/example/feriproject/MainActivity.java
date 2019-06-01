@@ -1,15 +1,11 @@
 package com.example.feriproject;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.EventLog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,12 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
@@ -30,7 +24,6 @@ import com.github.sundeepk.compactcalendarview.domain.Event;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,9 +33,9 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     /* custom calender */
-    public static final SimpleDateFormat myDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());;
+    public static final SimpleDateFormat myDateFormat;
     public static Toast toast;
-    public static MainActivity mainActivity;
+
     private CompactCalendarView compactCalendarView;
 
     /* recycler view */
@@ -57,17 +50,24 @@ public class MainActivity extends AppCompatActivity {
     /* simple UI elements */
     Button buttonSelectedDate;
     Button buttonRemove;
+    Button buttonAll;
     ImageButton buttonFloatinAdd;
-    private static int COLOR_SELECTED = Color.CYAN;
-    private static int COLOR_NOT_SELECTED = Color.WHITE;
+    private static int COLOR_SELECTED;
+    private static int COLOR_NOT_SELECTED;
     public static Animation scale;
 
     /* MY DATA */
     public static final String TAG = "log";
     public static final int EVENT_CODE = 1;
-    private static long selectedTimeStamp = 0;
     private static int RECYCLER_COUNT = 0;
-    private static ArrayList<Event> currentEvents = new ArrayList<>();
+    private static List<Event> currentEvents, currentSelectedEvents;
+    private static Date currentFirstDateOfMonth, currentDate;
+
+    static  {
+        currentEvents = new ArrayList<>();
+        currentSelectedEvents = new ArrayList<>();
+        myDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,43 +85,53 @@ public class MainActivity extends AppCompatActivity {
         buttonSelectedDate = findViewById(R.id.buttonSelected);
         buttonRemove = findViewById(R.id.buttonRemove);
         buttonFloatinAdd = findViewById(R.id.floatingAdd);
+        buttonAll = findViewById(R.id.buttonAll);
 
+        buttonAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMonthEvents(currentFirstDateOfMonth);
+            }
+        });
         buttonSelectedDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO show only selected date events
+                showDayEvents(currentDate);
             }
         });
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                compactCalendarView.hideCalendar();
+
             }
         });
+
         buttonFloatinAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((ImageButton)v).startAnimation(scale);
+                v.startAnimation(scale);
                 buttonClickLoadEventNew();
             }
         });
 
-        mainActivity = this;  // static reference for static functions
+        COLOR_SELECTED = getResources().getColor(R.color._recycler_selected);
+        COLOR_NOT_SELECTED = getResources().getColor(R.color._recycler_unselected);
+        currentDate = new Date(System.currentTimeMillis());
+        currentFirstDateOfMonth = new Date(System.currentTimeMillis());
         initializeCalender(); // initialize for CUSTOM CALENDER
         buildRecyclerView();  //
     }
 
     public void buttonClickLoadEventChange(int position) {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
-        RecyclerItem item = recyclerItems.get(position);
-        data.putExtra("timeStamp", selectedTimeStamp);
+        data.putExtra("timeStamp", currentDate.getTime());
         data.putExtra("name", recyclerItems.get(position).getDescription() +"");
         data.putExtra("color", recyclerItems.get(position).getEventColor());
         this.startActivityForResult(data, EVENT_CODE);
     }
     public void buttonClickLoadEventNew() {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
-        if(selectedTimeStamp != 0) data.putExtra("timeStamp", selectedTimeStamp);
+        if(currentDate.getTime() != 0) data.putExtra("timeStamp", currentDate.getTime());
         this.startActivityForResult(data, EVENT_CODE);
     }
 
@@ -154,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onEvent(Main activity): ");
     }
 
+    /* RECYCLER VIEW FUNCTIONS */
     private void addItem(int position, Event event) {
         try {
             recyclerItems.add(new RecyclerItem(event));
@@ -194,6 +205,38 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "changeItem (exception): " + e.getMessage());
         }
     }
+    private void showMonthEvents(Date currentFirstDateOfMonth) {
+        try {
+            if(currentFirstDateOfMonth == null) {
+                Log.d(TAG, "showMonthEvents: current month not set! ");
+                return;
+            }
+            Log.d(TAG, currentFirstDateOfMonth.toString());
+            List<Event> temp = compactCalendarView.getEventsForMonth(currentFirstDateOfMonth);
+            setAndRefresh(temp);
+        } catch (Exception e) {
+            Log.d(TAG, "showMonthEvents: " + e.getMessage());
+        }
+    }
+    private void showDayEvents(Date currentDate) {
+        try {
+            if(currentFirstDateOfMonth == null) {
+                Log.d(TAG, "showDayEvents: current month not set! ");
+                return;
+            }
+            Log.d(TAG, currentDate.toString());
+            List<Event> temp = compactCalendarView.getEvents(currentDate);
+            setAndRefresh(temp);
+        } catch (Exception e) {
+            Log.d(TAG, "showDayEvents: " + e.getMessage());
+        }
+    }
+    private void setAndRefresh(List<Event> currentEvents) {
+        int length = recyclerItems.size(), c = 0;
+        Log.d(TAG, "setAndRefresh: " + length + "  " + currentEvents.size());
+        for(int i = length - 1; i >= 0; i--) removeItem(i);
+        for (Event in:currentEvents) addItem(c++, in);
+    }
 
     private void buildRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView);
@@ -216,23 +259,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void initializeCalender() {
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
 
-        compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
+    private void initializeCalender() {
+        //final ActionBar actionBar = getSupportActionBar();
+        //actionBar.setDisplayHomeAsUpEnabled(false);
+
+        compactCalendarView = findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(true);
 
         // on day
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
-                List<Event> events = compactCalendarView.getEvents(dateClicked);
-                Date date = new java.util.Date(dateClicked.getTime());
-
-                Log.d(TAG, "Day was clicked: " + myDateFormat.format(date) + " with events " + events);
-
-                selectedTimeStamp = dateClicked.getTime();
+                currentDate = dateClicked;
+                List<Event> currentEvents = compactCalendarView.getEvents(dateClicked);
+                if(currentEvents.size()> 0) showDayEvents(dateClicked);
 
                 /*List<Event> currentEvents = compactCalendarView.getEvents(date);
                 if(currentEvents != null && currentEvents.size() != 0) {
@@ -250,25 +291,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 Log.d(TAG, "Month was scrolled to: " + firstDayOfNewMonth);
+                currentFirstDateOfMonth = firstDayOfNewMonth;
             }
         });
     }
 
-    public static final int GetColorResource(int colorID) {
-        return mainActivity.getResources().getColor(colorID);
-    }
-    public static final void initCustomToast(String content) {
-        LayoutInflater inflater = mainActivity.getLayoutInflater();
+   /* public final void initCustomToast(String content) {
+        LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout._custom_toast,
-                (ViewGroup) mainActivity.findViewById(R.id.custom_toast_container));
+                (ViewGroup) findViewById(R.id.custom_toast_container));
 
-        TextView text = (TextView) layout.findViewById(R.id.text);
+        TextView text = layout.findViewById(R.id.text);
         text.setText(content);
 
-        toast = new Toast(mainActivity.getApplicationContext());
+        toast = new Toast(getApplicationContext());
         toast.setGravity(Gravity.BOTTOM, 0, 30);
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
         toast.show();
-    }
+    } */
 }
