@@ -102,7 +102,14 @@ public class MainActivity extends AppCompatActivity {
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(currentSelectedEvents != null &&currentSelectedEvents.size() > 0) {
+                    int c = 0;
+                    for (RecyclerItem item: recyclerItems) {
+                        if(currentSelectedEvents.contains(item.getEvent())) removeItem(c);
+                        c++;
+                    }
+                    compactCalendarView.removeEvents(currentSelectedEvents);
+                }
             }
         });
 
@@ -167,16 +174,18 @@ public class MainActivity extends AppCompatActivity {
     /* RECYCLER VIEW FUNCTIONS */
     private void addItem(int position, Event event) {
         try {
+            currentEvents.add(event);
+
             recyclerItems.add(new RecyclerItem(event));
             mAdapter.notifyItemInserted(position);
-
-            currentEvents.add(event);
         } catch (Exception e) {
             Log.d(TAG, "addItem (exception): " + e.getMessage());
         }
     }
     private void removeItem(int position) {
         try {
+            currentEvents.remove(recyclerItems.get(position).getEvent());
+
             recyclerItems.remove(position);
             mAdapter.notifyItemRemoved(position);
         } catch (Exception e) {
@@ -195,11 +204,13 @@ public class MainActivity extends AppCompatActivity {
         try {
             // clear colors
 
-            if(recyclerItems.get(position).getBackgroundColor() == COLOR_SELECTED)
+            if(recyclerItems.get(position).getBackgroundColor() == COLOR_SELECTED) {
                 recyclerItems.get(position).setBackgroundColor(COLOR_NOT_SELECTED);
-            else
+            }
+            else {
                 recyclerItems.get(position).setBackgroundColor(COLOR_SELECTED);
-
+                currentSelectedEvents.add(recyclerItems.get(position).getEvent());
+            }
             mAdapter.notifyItemChanged(position);
         } catch (Exception e) {
             Log.d(TAG, "changeItem (exception): " + e.getMessage());
