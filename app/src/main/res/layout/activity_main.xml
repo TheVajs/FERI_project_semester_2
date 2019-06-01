@@ -10,8 +10,10 @@
     <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/compactcalendar_view"
         android:layout_width="fill_parent"
-        android:layout_height="253dp"
+        android:layout_height="250dp"
+        android:paddingStart="10dp"
         android:paddingLeft="10dp"
+        android:paddingTop="10dp"
         android:paddingRight="10dp"
         app:compactCalendarBackgroundColor="#94054a"
         app:compactCalendarCurrentDayBackgroundColor="@color/_calender_current_day"
@@ -51,6 +53,7 @@
         android:id="@+id/linearLayout2"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_margin="2dp"
         android:layout_marginBottom="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -62,33 +65,33 @@
 
         <Button
             android:id="@+id/buttonAll"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="View all"
             android:background="@drawable/_custom_button_style"
-            android:textColor="@android:color/white"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:text="@string/_main_activity_all"
+            android:textColor="@android:color/white" />
 
         <Button
-            android:id="@+id/buttonAdd"
+            android:id="@+id/buttonSelected"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Add"
             android:background="@drawable/_custom_button_style"
-            android:textColor="@android:color/white"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:text="@string/_main_activity_selected"
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/buttonRemove"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Remove"
             android:background="@drawable/_custom_button_style"
-            android:textColor="@android:color/white"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:text="@string/_main_activity_remove"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 

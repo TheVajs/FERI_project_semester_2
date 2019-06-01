@@ -28,16 +28,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         public CardView cardView;
         public ImageView mImageView;
-        public TextView mName;
-        public TextView mContent;
+        public TextView mDate;
+        public TextView mDescription;
 
         public MyViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
 
             cardView = itemView.findViewById(R.id.cardView);
             mImageView = itemView.findViewById(R.id.imageView);
-            mName = itemView.findViewById(R.id.name);
-            mContent = itemView.findViewById(R.id.content);
+            mDate = itemView.findViewById(R.id.date);
+            mDescription = itemView.findViewById(R.id.description);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,9 +83,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         RecyclerItem currentItem = mItemList.get(i);
 
-        //myViewHolder.mImageView.setImageResource(currentItem.getImageResource());
-        myViewHolder.mName.setText(currentItem.getName());
-        myViewHolder.mContent.setText(currentItem.getContent());
+        //myViewHolder.mImageView.setBackgroundColor(MainActivity.GetColorResource(currentItem.getEventColor()));
+        myViewHolder.mImageView.setBackgroundColor(currentItem.getEventColor());
+        myViewHolder.mDate.setText(currentItem.getStringDate());
+        myViewHolder.mDescription.setText(currentItem.getDescription());
         myViewHolder.cardView.setBackgroundColor(currentItem.getBackgroundColor());
     }
 

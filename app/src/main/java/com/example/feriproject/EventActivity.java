@@ -73,11 +73,16 @@ public class EventActivity extends AppCompatActivity {
             button.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    for (ImageButton select: imageButtons) {
-                        select.setPressed(false);
+                    if(event.getActionMasked() == MotionEvent.ACTION_DOWN)
+                    {
+                        for (ImageButton select: imageButtons) {
+                            select.setPressed(false);
+                        }
+                        ((ImageButton)v).setPressed(true);
+                        ((ImageButton)v).startAnimation(MainActivity.scale);
+                        setColor = Integer.parseInt(((ImageButton)v).getTag().toString());
+
                     }
-                    ((ImageButton)v).setPressed(true);
-                    setColor = Integer.parseInt(((ImageButton)v).getTag().toString());
                     return true;
                 }
             });

@@ -2,8 +2,10 @@
     <string name="app_name">Activity Schedule</string>
     <string name="_empty"></string>
 
-    <!-- MAIN ACTIVITY STRINGS -->
-
+    <!-- MAIN ACTIVITY layout STRINGS -->
+    <string name="_main_activity_all">VIEW ALL</string>
+    <string name="_main_activity_selected">SELECTED</string>
+    <string name="_main_activity_remove">REMOVE</string>
 
     <!-- EVENT ACTIVITY STRINGS -->
     <string name="_event_activity_title">Create new activity</string>

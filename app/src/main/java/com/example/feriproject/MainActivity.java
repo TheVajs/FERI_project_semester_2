@@ -27,6 +27,9 @@ import android.widget.Toolbar;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +39,6 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String TAG = "log";
     /* custom calender */
     public static final SimpleDateFormat myDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());;
     public static Toast toast;
@@ -53,14 +55,15 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<RecyclerItem> recyclerItems;
 
     /* simple UI elements */
-    Button buttonAdd;
+    Button buttonSelectedDate;
     Button buttonRemove;
     ImageButton buttonFloatinAdd;
     private static int COLOR_SELECTED = Color.CYAN;
     private static int COLOR_NOT_SELECTED = Color.WHITE;
-    private Animation scale;
+    public static Animation scale;
 
     /* MY DATA */
+    public static final String TAG = "log";
     public static final int EVENT_CODE = 1;
     private static long selectedTimeStamp = 0;
     private static int RECYCLER_COUNT = 0;
@@ -71,33 +74,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* EVENT BUS */
+        EventBus.getDefault().register(this);
+
         /* ADD TO RECYCLER LIST */
         recyclerItems = new ArrayList<>();
-        recyclerItems.add(new RecyclerItem(0, "Go shoping", "- buy something"));
 
         /* BUILD UI */
         scale = AnimationUtils.loadAnimation(this, R.anim._scale);
-        buttonAdd = findViewById(R.id.buttonAdd);
+        buttonSelectedDate = findViewById(R.id.buttonSelected);
         buttonRemove = findViewById(R.id.buttonRemove);
         buttonFloatinAdd = findViewById(R.id.floatingAdd);
 
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
+        buttonSelectedDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonClickLoadEventNew();
+                // TODO show only selected date events
             }
         });
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                compactCalendarView.hideCalendar();
             }
         });
         buttonFloatinAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((ImageButton)v).startAnimation(scale);
-
                 buttonClickLoadEventNew();
             }
         });
@@ -111,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
         RecyclerItem item = recyclerItems.get(position);
         data.putExtra("timeStamp", selectedTimeStamp);
-        data.putExtra("name", recyclerItems.get(position).getName() +"");
-        data.putExtra("color", recyclerItems.get(position).getBackgroundColor());
+        data.putExtra("name", recyclerItems.get(position).getDescription() +"");
+        data.putExtra("color", recyclerItems.get(position).getEventColor());
         this.startActivityForResult(data, EVENT_CODE);
     }
     public void buttonClickLoadEventNew() {
@@ -136,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 if(ts != -1) {
                     Event newEvent = new Event(getResources().getColor(colNumber), ts, name);
                     compactCalendarView.addEvent(newEvent);
-                    addItem(RECYCLER_COUNT++);
+                    addItem(RECYCLER_COUNT++, newEvent);
                 } else {
                     Log.d(TAG, "onActivityResult: timeStamp was not received! " + ts + " " + colNumber);
                 }
@@ -145,10 +149,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void addItem(int position) {
+    @Subscribe
+    public void onEvent(CustomMessageEvent event) {
+        Log.d(TAG, "onEvent(Main activity): ");
+    }
+
+    private void addItem(int position, Event event) {
         try {
-            recyclerItems.add(new RecyclerItem(1, "New activity set " + position, "Something to do!"));
+            recyclerItems.add(new RecyclerItem(event));
             mAdapter.notifyItemInserted(position);
+
+            currentEvents.add(event);
         } catch (Exception e) {
             Log.d(TAG, "addItem (exception): " + e.getMessage());
         }
@@ -163,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void changeItem(int position, String name) {
         try {
-            recyclerItems.get(position).setName(name);
+            recyclerItems.get(position).setDescription(name);
             mAdapter.notifyItemChanged(position);
         } catch (Exception e) {
             Log.d(TAG, "changeItem (exception): " + e.getMessage());
@@ -212,17 +223,11 @@ public class MainActivity extends AppCompatActivity {
         compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(true);
 
-        /*
-        // set event
-        Event newEvent = new Event(Color.RED , 1559339425, "My day");
-        compactCalendarView.addEvent(newEvent); */
-
         // on day
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
                 List<Event> events = compactCalendarView.getEvents(dateClicked);
-
                 Date date = new java.util.Date(dateClicked.getTime());
 
                 Log.d(TAG, "Day was clicked: " + myDateFormat.format(date) + " with events " + events);
@@ -249,6 +254,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public static final int GetColorResource(int colorID) {
+        return mainActivity.getResources().getColor(colorID);
+    }
     public static final void initCustomToast(String content) {
         LayoutInflater inflater = mainActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout._custom_toast,

@@ -2,35 +2,58 @@ package com.example.feriproject;
 
 import android.graphics.Color;
 
-public class RecyclerItem {
-    private int mImageResource;
-    private int mBackgroundColor;
-    private String name;
-    private String content;
+import com.github.sundeepk.compactcalendarview.domain.Event;
 
-    public RecyclerItem(int mImageResource, String name, String content) {
-        this.mImageResource = mImageResource;
-        this.name = name;
-        this.content = content;
+public class RecyclerItem {
+    private int mBackgroundColor;
+    private Event event;
+    private long timeStamp;
+    private int eventColor;
+    private String description;
+
+    public RecyclerItem(Event event) {
+        this.event = event;
+        this.timeStamp = event.getTimeInMillis();
+        this.eventColor = event.getColor();
+        this.description = event.toString();
+        this.mBackgroundColor = Color.WHITE;
+    }
+    public RecyclerItem(long timeStamp, int eventColor, String description) {
+        this.event = event;
+        this.timeStamp = timeStamp;
+        this.eventColor = eventColor;
+        this.description = description;
         this.mBackgroundColor = Color.WHITE;
     }
 
-    public int getImageResource() {
-        return mImageResource;
+
+    public int getEventColor() {
+        return event.getColor();
+    }
+    public  void setEventColor(int color) {
+        eventColor = color;
+    }
+    public String getStringDate() {
+        return MainActivity.myDateFormat.format(event.getTimeInMillis());
+    }
+    public long getTimeStampDate() {
+        return event.getTimeInMillis();
+    }
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+    public String getDescription() {
+        return event.getData().toString();
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEvent(Event event) {
+        this.event = event;
     }
-    public String getName() {
-        return name;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-    public String getContent() {
-        return content;
+    public Event getEvent() {
+        return this.event;
     }
 
     public void setBackgroundColor(int color) {

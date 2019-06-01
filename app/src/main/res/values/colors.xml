@@ -8,6 +8,7 @@
     <color name="_main_background">#0C0C3E</color>
     <color name="_main_background_1">#2F0954</color>
     <color name="_main_primary">#EE0070</color>
+    <color name="_main_secondary">#c6015e</color>
     <color name="_support_icon">#FFF</color>
     <color name="_support_unselected">#FFF</color>
     <color name="_support_disabled">#DB3794</color>
@@ -19,7 +20,7 @@
     <color name="_calender_selected_events">#fa6bb0</color>
 
     <!-- event colors -->
-    <color name="_calender_basic">#60002d</color>
+    <color name="_calender_basic">#c6015e</color>
     <color name="_calender_important">#0CFAE1</color>
     <color name="_calender_critical">#FAF723</color>
 
