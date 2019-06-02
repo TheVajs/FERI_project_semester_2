@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#EE0070</color>
     <color name="colorPrimaryDark">#EE0070</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#FFF</color>
 
     <color name="_empty">#00000000</color>
     <color name="_main_background">#0C0C3E</color>
@@ -37,4 +37,8 @@
     <!-- RECYCLER -->
     <color name="_recycler_selected">#f9a2c6</color>
     <color name="_recycler_unselected">#FFF</color>
+
+    <!-- DATE PICKER -->
+    <color name="_picker_main">#f9a2c6</color>
+    <color name="_picker_background">#FFF</color>
 </resources>

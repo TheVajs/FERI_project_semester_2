@@ -1,5 +1,6 @@
 package com.example.feriproject;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -19,21 +20,29 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import net.steamcrafted.lineartimepicker.dialog.LinearDatePickerDialog;
+import net.steamcrafted.lineartimepicker.dialog.LinearTimePickerDialog;
+import net.steamcrafted.lineartimepicker.view.LinearDatePickerView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class EventActivity extends AppCompatActivity {
 
     private TextView textName, textDate;
-    private ImageButton imgButton1, imgButton2, imgButton3;
+    private ImageButton imageButtonPick;
     private ArrayList<ImageButton> imageButtons;
     private ArrayList<ImageView> selecteds;
 
     public static final String DEFAUL_NAME = "New activity 1";
-
     private int setColor;
+
+    LinearDatePickerDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +52,7 @@ public class EventActivity extends AppCompatActivity {
 
         textName = findViewById(R.id.textName);
         textDate = findViewById(R.id.textDate);
+        imageButtonPick = findViewById(R.id.imageButtonPick);
 
         imageButtons = new ArrayList<>();
         imageButtons.add((ImageButton) findViewById(R.id.imageButton1));
@@ -52,7 +62,14 @@ public class EventActivity extends AppCompatActivity {
         imageButtons.get(1).setTag(R.color._calender_important);
         imageButtons.get(2).setTag(R.color._calender_critical);
 
-/*
+        imageButtonPick.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+
+            }
+        });
+        /*
         selecteds = new ArrayList<>();
         selecteds.add((ImageView) findViewById(R.id.selected1));
         selecteds.add((ImageView) findViewById(R.id.selected2));
@@ -110,6 +127,8 @@ public class EventActivity extends AppCompatActivity {
         for (ImageButton b: imageButtons) {
             if(b.getTag().toString().equals(setColor + "")) b.setPressed(true);
         }
+
+        initializeDialog(tsLong);
     }
 
     public void buttonOnClickSave(View v) {
@@ -134,5 +153,39 @@ public class EventActivity extends AppCompatActivity {
         finally {
             super.finish();
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+    }
+
+    private void initializeDialog(long timeStamp) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date(timeStamp));
+        Log.d(MyApplication.TAG, "YEAR: " + calendar.get(Calendar.YEAR) + " | " + new Date(timeStamp).getYear());
+        dialog = LinearDatePickerDialog.Builder.with(EventActivity.this)
+                .setYear(calendar.get(Calendar.YEAR))
+                .setMinYear(2015)
+                .setMaxYear(2025)
+                .setDialogBackgroundColor(getResources().getColor(R.color._main_secondary))
+                //.setPickerBackgroundColor(getResources().getColor(R.color._main_background))
+                .setTextColor(getResources().getColor(R.color._support_unselected))
+                .setLineColor(getResources().getColor(R.color._support_unselected))
+                .setTextBackgroundColor(getResources().getColor(R.color._main_secondary))
+                //.setButtonColor(int color)
+                .setButtonCallback(new LinearDatePickerDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(DialogInterface dialog, int year, int month, int day) {
+                        Toast.makeText(EventActivity.this, "" + year + " - " + month + " - " + day, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNegative(DialogInterface dialog) {
+
+                    }
+                })
+                .build();
     }
 }

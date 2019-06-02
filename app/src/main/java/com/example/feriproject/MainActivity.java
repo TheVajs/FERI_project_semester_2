@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
         if(currentDate.getTime() != 0) data.putExtra("timeStamp", currentDate.getTime());
         this.startActivityForResult(data, MyApplication.EVENT_CODE);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     @Override

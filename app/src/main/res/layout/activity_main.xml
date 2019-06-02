@@ -7,10 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/_custom_toolbar"/>
+
     <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/compactcalendar_view"
         android:layout_width="fill_parent"
         android:layout_height="250dp"
+        android:layout_marginTop="0dp"
         android:paddingStart="10dp"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"
@@ -24,7 +29,7 @@
         app:compactCalendarTextSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <ImageButton
         android:id="@+id/floatingAdd"
