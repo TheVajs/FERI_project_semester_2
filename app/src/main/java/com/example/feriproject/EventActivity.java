@@ -115,7 +115,7 @@ public class EventActivity extends AppCompatActivity {
     public void buttonOnClickSave(View v) {
         try {
             Intent data = new Intent();
-            Log.d(MainActivity.TAG, textDate.getText()+ "");
+            Log.d(MyApplication.TAG, textDate.getText()+ "");
 
             Date date = MainActivity.myDateFormat.parse(textDate.getText() + "");
 
@@ -126,10 +126,10 @@ public class EventActivity extends AppCompatActivity {
             // Activity finished ok, return the data
             super.setResult(RESULT_OK, data);
 
-            Log.d(MainActivity.TAG, date.getTime() + " " + textName.getText() + " "  + setColor);
+            Log.d(MyApplication.TAG, date.getTime() + " " + textName.getText() + " "  + setColor);
         }
         catch (Exception e) {
-            Log.d(MainActivity.TAG, e.getMessage());
+            Log.d(MyApplication.TAG, e.getMessage());
         }
         finally {
             super.finish();

@@ -19,7 +19,7 @@ public class RecyclerItem {
         this.mBackgroundColor = Color.WHITE;
     }
     public RecyclerItem(long timeStamp, int eventColor, String description) {
-        this.event = event;
+        this.event = new Event(eventColor, timeStamp, description);
         this.timeStamp = timeStamp;
         this.eventColor = eventColor;
         this.description = description;

@@ -1,6 +1,7 @@
 package com.example.feriproject;
 
 import android.content.Intent;
+import android.provider.CalendarContract;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import org.greenrobot.eventbus.Subscribe;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,11 +59,13 @@ public class MainActivity extends AppCompatActivity {
     public static Animation scale;
 
     /* MY DATA */
-    public static final String TAG = "log";
-    public static final int EVENT_CODE = 1;
     private static int RECYCLER_COUNT = 0;
     private static List<Event> currentEvents, currentSelectedEvents;
+    private static List<Integer> currentSelectedEventIndexses;
     private static Date currentFirstDateOfMonth, currentDate;
+
+    public static MyApplication app;
+    public static MyData data;
 
     static  {
         currentEvents = new ArrayList<>();
@@ -76,9 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
         /* EVENT BUS */
         EventBus.getDefault().register(this);
-
-        /* ADD TO RECYCLER LIST */
-        recyclerItems = new ArrayList<>();
 
         /* BUILD UI */
         scale = AnimationUtils.loadAnimation(this, R.anim._scale);
@@ -103,12 +104,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(currentSelectedEvents != null &&currentSelectedEvents.size() > 0) {
-                    int c = 0;
-                    for (RecyclerItem item: recyclerItems) {
-                        if(currentSelectedEvents.contains(item.getEvent())) removeItem(c);
-                        c++;
+                    for (int i = 0; i < recyclerItems.size(); i++) {
+                        Event event = recyclerItems.get(i).getEvent();
+                        if(currentSelectedEvents.contains(event)){
+                            deleteItem(event);
+                            removeItem(i);
+                        }
                     }
+                    /*for(int i = 0; i < indexs.size(); i++) {
+                        removeItem(indexs.get(i));
+                    } */
                     compactCalendarView.removeEvents(currentSelectedEvents);
+                    currentSelectedEvents = new ArrayList<>();
                 }
             }
         });
@@ -116,17 +123,25 @@ public class MainActivity extends AppCompatActivity {
         buttonFloatinAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.startAnimation(scale);
-                buttonClickLoadEventNew();
+                if(v.getAnimation() == null){
+                    v.startAnimation(scale);
+                    buttonClickLoadEventNew();
+                }
             }
         });
 
+        // APPLICATION
+        app = (MyApplication) getApplication();
+
+        // DATA
+        data = app.getData();
         COLOR_SELECTED = getResources().getColor(R.color._recycler_selected);
         COLOR_NOT_SELECTED = getResources().getColor(R.color._recycler_unselected);
         currentDate = new Date(System.currentTimeMillis());
         currentFirstDateOfMonth = new Date(System.currentTimeMillis());
-        initializeCalender(); // initialize for CUSTOM CALENDER
-        buildRecyclerView();  //
+        initializeCalender();       // initialize for CUSTOM CALENDER
+        initializeRecyclerView();   //
+        initializeData();           // sets stored events in calender and recycler view
     }
 
     public void buttonClickLoadEventChange(int position) {
@@ -134,32 +149,33 @@ public class MainActivity extends AppCompatActivity {
         data.putExtra("timeStamp", currentDate.getTime());
         data.putExtra("name", recyclerItems.get(position).getDescription() +"");
         data.putExtra("color", recyclerItems.get(position).getEventColor());
-        this.startActivityForResult(data, EVENT_CODE);
+        this.startActivityForResult(data, MyApplication.EVENT_CODE);
     }
     public void buttonClickLoadEventNew() {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
         if(currentDate.getTime() != 0) data.putExtra("timeStamp", currentDate.getTime());
-        this.startActivityForResult(data, EVENT_CODE);
+        this.startActivityForResult(data, MyApplication.EVENT_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == EVENT_CODE) {
+        if (requestCode == MyApplication.EVENT_CODE) {
             if (resultCode == RESULT_OK) {
 
                 long ts = data.getLongExtra("timeStamp", -1);
                 String name = data.getStringExtra("name");
                 int colNumber = data.getIntExtra("color", -1);
-                Log.d(TAG, "onActivityResult: results: " + ts + " " + colNumber);
+                Log.d(MyApplication.TAG, "onActivityResult: results: " + ts + " " + colNumber);
 
                 if(ts != -1) {
                     Event newEvent = new Event(getResources().getColor(colNumber), ts, name);
                     compactCalendarView.addEvent(newEvent);
                     addItem(RECYCLER_COUNT++, newEvent);
+                    saveItem(newEvent);
                 } else {
-                    Log.d(TAG, "onActivityResult: timeStamp was not received! " + ts + " " + colNumber);
+                    Log.d(MyApplication.TAG, "onActivityResult: timeStamp was not received! " + ts + " " + colNumber);
                 }
 
             }
@@ -168,28 +184,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public void onEvent(CustomMessageEvent event) {
-        Log.d(TAG, "onEvent(Main activity): ");
+        Log.d(MyApplication.TAG, "onEvent(Main activity): ");
     }
 
     /* RECYCLER VIEW FUNCTIONS */
     private void addItem(int position, Event event) {
         try {
             currentEvents.add(event);
-
             recyclerItems.add(new RecyclerItem(event));
             mAdapter.notifyItemInserted(position);
         } catch (Exception e) {
-            Log.d(TAG, "addItem (exception): " + e.getMessage());
+            Log.d(MyApplication.TAG, "addItem (exception): " + e.getMessage());
         }
     }
     private void removeItem(int position) {
         try {
-            currentEvents.remove(recyclerItems.get(position).getEvent());
-
+            Event event = recyclerItems.get(position).getEvent();
+            currentEvents.remove(event);
             recyclerItems.remove(position);
             mAdapter.notifyItemRemoved(position);
         } catch (Exception e) {
-            Log.d(TAG, "removeItem (exception): " + e.getMessage());
+            Log.d(MyApplication.TAG, "removeItem (exception): " + e.getMessage());
         }
     }
     private void changeItem(int position, String name) {
@@ -197,62 +212,68 @@ public class MainActivity extends AppCompatActivity {
             recyclerItems.get(position).setDescription(name);
             mAdapter.notifyItemChanged(position);
         } catch (Exception e) {
-            Log.d(TAG, "changeItem (exception): " + e.getMessage());
+            Log.d(MyApplication.TAG, "changeItem (exception): " + e.getMessage());
         }
     }
     private void selectItem(int position) {
         try {
             // clear colors
-
+            Log.d(MyApplication.TAG, "POSITION " + position);
+            Log.d(MyApplication.TAG, "OBJECT: " + recyclerItems.get(position).toString());
             if(recyclerItems.get(position).getBackgroundColor() == COLOR_SELECTED) {
                 recyclerItems.get(position).setBackgroundColor(COLOR_NOT_SELECTED);
             }
             else {
                 recyclerItems.get(position).setBackgroundColor(COLOR_SELECTED);
                 currentSelectedEvents.add(recyclerItems.get(position).getEvent());
+                //currentSelectedEventIndexses.add(position);
             }
             mAdapter.notifyItemChanged(position);
         } catch (Exception e) {
-            Log.d(TAG, "changeItem (exception): " + e.getMessage());
+            Log.d(MyApplication.TAG, "changeItem (exception): " + e.getMessage());
         }
     }
     private void showMonthEvents(Date currentFirstDateOfMonth) {
         try {
             if(currentFirstDateOfMonth == null) {
-                Log.d(TAG, "showMonthEvents: current month not set! ");
+                Log.d(MyApplication.TAG, "showMonthEvents: current month not set! ");
                 return;
             }
-            Log.d(TAG, currentFirstDateOfMonth.toString());
+            Log.d(MyApplication.TAG, currentFirstDateOfMonth.toString());
             List<Event> temp = compactCalendarView.getEventsForMonth(currentFirstDateOfMonth);
             setAndRefresh(temp);
         } catch (Exception e) {
-            Log.d(TAG, "showMonthEvents: " + e.getMessage());
+            Log.d(MyApplication.TAG, "showMonthEvents: " + e.getMessage());
         }
     }
     private void showDayEvents(Date currentDate) {
         try {
             if(currentFirstDateOfMonth == null) {
-                Log.d(TAG, "showDayEvents: current month not set! ");
+                Log.d(MyApplication.TAG, "showDayEvents: current month not set! ");
                 return;
             }
-            Log.d(TAG, currentDate.toString());
+            Log.d(MyApplication.TAG, currentDate.toString());
             List<Event> temp = compactCalendarView.getEvents(currentDate);
             setAndRefresh(temp);
         } catch (Exception e) {
-            Log.d(TAG, "showDayEvents: " + e.getMessage());
+            Log.d(MyApplication.TAG, "showDayEvents: " + e.getMessage());
         }
     }
     private void setAndRefresh(List<Event> currentEvents) {
-        int length = recyclerItems.size(), c = 0;
-        Log.d(TAG, "setAndRefresh: " + length + "  " + currentEvents.size());
-        for(int i = length - 1; i >= 0; i--) removeItem(i);
-        for (Event in:currentEvents) addItem(c++, in);
+        int length = recyclerItems.size();
+        Log.d(MyApplication.TAG, "setAndRefresh: " + length + "  " + currentEvents.size());
+        for(int i = length - 1; i >= 0; i--) {
+            removeItem(i);
+            RECYCLER_COUNT--;
+        }
+        for (Event in:currentEvents) addItem(RECYCLER_COUNT++, in);
     }
 
-    private void buildRecyclerView() {
+    private void initializeRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
+        recyclerItems = new ArrayList<>();
         mAdapter = new MyAdapter(recyclerItems);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -261,11 +282,13 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                Log.d(MyApplication.TAG, "CLICK!");
                 selectItem(position);
             }
 
             @Override
             public void onItemLongClick(int position) {
+                Log.d(MyApplication.TAG, "LONG!");
                 buttonClickLoadEventChange(position);
             }
         });
@@ -278,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
         compactCalendarView = findViewById(R.id.compactcalendar_view);
         compactCalendarView.setUseThreeLetterAbbreviation(true);
 
-        // on day
         compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
@@ -298,15 +320,40 @@ public class MainActivity extends AppCompatActivity {
                 } */
             }
 
-
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
-                Log.d(TAG, "Month was scrolled to: " + firstDayOfNewMonth);
+                Log.d(MyApplication.TAG, "Month was scrolled to: " + firstDayOfNewMonth);
                 currentFirstDateOfMonth = firstDayOfNewMonth;
             }
         });
     }
 
+    private void initializeData() {
+        List<Event> temp =  data.getEvents();
+        if(temp != null) {
+            Log.d(MyApplication.TAG, " LIST OF EVENTS: "+ temp.size());
+
+            //for (Event in : currentEvents) { }
+            int len = temp.size();
+            for (int i = 0; i < len; i++) {
+                compactCalendarView.addEvent(temp.get(i));
+                addItem(RECYCLER_COUNT++, temp.get(i));
+            }
+            Log.d(MyApplication.TAG, "initializeCalender: Data received from shared preference! Items: " + temp.size());
+        } else {
+            Log.d(MyApplication.TAG, "initializeCalender: No data is stored in shared preference!");
+        }
+    }
+
+
+    public void saveItem(Event event) {
+        data.addEvent(event);
+        app.saveMain();
+    }
+    public void deleteItem(Event event) {
+        data.deleteEvetn(event);
+        app.saveMain();
+    }
    /* public final void initCustomToast(String content) {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout._custom_toast,
