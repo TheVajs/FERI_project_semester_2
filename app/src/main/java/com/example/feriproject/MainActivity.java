@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     static  {
         currentEvents = new ArrayList<>();
         currentSelectedEvents = new ArrayList<>();
+        currentSelectedEventIndexses = new ArrayList<>();
         myDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
     }
 
@@ -103,7 +104,28 @@ public class MainActivity extends AppCompatActivity {
         buttonRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentSelectedEvents != null &&currentSelectedEvents.size() > 0) {
+                if(currentSelectedEventIndexses != null &&currentSelectedEventIndexses.size() > 0) {
+                    //Log.d(MyApplication.TAG, "buttonRemove(onClick): size: " + recyclerItems.size() + " | size: " +currentSelectedEventIndexses.size());
+                    //Log.d(MyApplication.TAG, "buttonRemove(onClick): elements Rec: " + recyclerItems.toString());
+                    //Log.d(MyApplication.TAG, "buttonRemove(onClick): elements Cur: " + currentSelectedEventIndexses.toString());
+                    int length =  recyclerItems.size();
+                    for (int i = length-1; i >= 0; i--) {
+                        Event event = recyclerItems.get(i).getEvent();
+                        //Log.d(MyApplication.TAG, "buttonRemove(onClick): elements Cur: " + recyclerItems.get(i).toString() + " | " + i);
+                        if(currentSelectedEventIndexses.contains(i)){
+                            //Log.d(MyApplication.TAG, "buttonRemove(onClick): DELETED Cur: " + recyclerItems.get(i).toString() + " | " + i + " | " + currentSelectedEventIndexses.toString());
+                            deleteItem(event);
+                            removeItem(i);
+                            compactCalendarView.removeEvent(event);
+                        }
+                    }
+                    /*for(int i = 0; i < indexs.size(); i++) {
+                        removeItem(indexs.get(i));
+                    }
+                    compactCalendarView.removeEvents(currentSelectedEvents);*/
+                    currentSelectedEventIndexses = new ArrayList<>();
+                }
+                /*if(currentSelectedEvents != null &&currentSelectedEvents.size() > 0) {
                     for (int i = 0; i < recyclerItems.size(); i++) {
                         Event event = recyclerItems.get(i).getEvent();
                         if(currentSelectedEvents.contains(event)){
@@ -113,10 +135,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                     /*for(int i = 0; i < indexs.size(); i++) {
                         removeItem(indexs.get(i));
-                    } */
+                    }
                     compactCalendarView.removeEvents(currentSelectedEvents);
                     currentSelectedEvents = new ArrayList<>();
-                }
+                } */
             }
         });
 
@@ -225,8 +247,9 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 recyclerItems.get(position).setBackgroundColor(COLOR_SELECTED);
-                currentSelectedEvents.add(recyclerItems.get(position).getEvent());
-                //currentSelectedEventIndexses.add(position);
+                //currentSelectedEvents.add(recyclerItems.get(position).getEvent());
+                currentSelectedEventIndexses.add(position);
+                Log.d(MyApplication.TAG,"selectItem: " + position);
             }
             mAdapter.notifyItemChanged(position);
         } catch (Exception e) {
@@ -260,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void setAndRefresh(List<Event> currentEvents) {
+        currentSelectedEventIndexses = new ArrayList<>();
         int length = recyclerItems.size();
         Log.d(MyApplication.TAG, "setAndRefresh: " + length + "  " + currentEvents.size());
         for(int i = length - 1; i >= 0; i--) {
