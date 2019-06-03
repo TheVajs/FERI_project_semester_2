@@ -11,4 +11,18 @@
     <string name="_event_activity_title">Create new activity</string>
     <string name="_event_activity_field_name">Activity name</string>
     <string name="_event_activity_field_date">Date</string>
+
+    <string name="button_create">CREATE</string>
+
+    <!-- DRAWER -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_maps">Maps</string>
+    <string name="action_picture">Picture</string>
+
+    <string name="menu_map">Map GPS</string>
+    <string name="menu_camera">Take a photo</string>
 </resources>

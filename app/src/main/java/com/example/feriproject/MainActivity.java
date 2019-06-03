@@ -2,14 +2,21 @@ package com.example.feriproject;
 
 import android.content.Intent;
 import android.provider.CalendarContract;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -57,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private static int COLOR_SELECTED;
     private static int COLOR_NOT_SELECTED;
     public static Animation scale;
+    // private static DrawerLayout drawer; // https://www.youtube.com/watch?v=bjYstsO1PgI&t=4s
 
     /* MY DATA */
     private static int RECYCLER_COUNT = 0;
@@ -106,39 +114,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(currentSelectedEventIndexses != null &&currentSelectedEventIndexses.size() > 0) {
                     //Log.d(MyApplication.TAG, "buttonRemove(onClick): size: " + recyclerItems.size() + " | size: " +currentSelectedEventIndexses.size());
-                    //Log.d(MyApplication.TAG, "buttonRemove(onClick): elements Rec: " + recyclerItems.toString());
-                    //Log.d(MyApplication.TAG, "buttonRemove(onClick): elements Cur: " + currentSelectedEventIndexses.toString());
                     int length =  recyclerItems.size();
                     for (int i = length-1; i >= 0; i--) {
                         Event event = recyclerItems.get(i).getEvent();
-                        //Log.d(MyApplication.TAG, "buttonRemove(onClick): elements Cur: " + recyclerItems.get(i).toString() + " | " + i);
                         if(currentSelectedEventIndexses.contains(i)){
-                            //Log.d(MyApplication.TAG, "buttonRemove(onClick): DELETED Cur: " + recyclerItems.get(i).toString() + " | " + i + " | " + currentSelectedEventIndexses.toString());
                             deleteItem(event);
                             removeItem(i);
                             compactCalendarView.removeEvent(event);
                         }
                     }
-                    /*for(int i = 0; i < indexs.size(); i++) {
-                        removeItem(indexs.get(i));
-                    }
-                    compactCalendarView.removeEvents(currentSelectedEvents);*/
                     currentSelectedEventIndexses = new ArrayList<>();
                 }
-                /*if(currentSelectedEvents != null &&currentSelectedEvents.size() > 0) {
-                    for (int i = 0; i < recyclerItems.size(); i++) {
-                        Event event = recyclerItems.get(i).getEvent();
-                        if(currentSelectedEvents.contains(event)){
-                            deleteItem(event);
-                            removeItem(i);
-                        }
-                    }
-                    /*for(int i = 0; i < indexs.size(); i++) {
-                        removeItem(indexs.get(i));
-                    }
-                    compactCalendarView.removeEvents(currentSelectedEvents);
-                    currentSelectedEvents = new ArrayList<>();
-                } */
             }
         });
 
@@ -164,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
         initializeCalender();       // initialize for CUSTOM CALENDER
         initializeRecyclerView();   //
         initializeData();           // sets stored events in calender and recycler view
+        //initializeDrawer();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     public void buttonClickLoadEventChange(int position) {
@@ -380,18 +370,49 @@ public class MainActivity extends AppCompatActivity {
         data.deleteEvetn(event);
         app.saveMain();
     }
-   /* public final void initCustomToast(String content) {
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout._custom_toast,
-                (ViewGroup) findViewById(R.id.custom_toast_container));
 
-        TextView text = layout.findViewById(R.id.text);
-        text.setText(content);
+    /*private void initializeDrawer() {
+        Log.d(MyApplication.TAG, "initializeDrawer: DONE!");
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.BOTTOM, 0, 30);
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.setView(layout);
-        toast.show();
+        drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        Log.d(MyApplication.TAG, "initializeDrawer: DONE!");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     } */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // help
+        // https://www.youtube.com/watch?v=oh4YOj9VkVE&t=112s
+        switch (item.getItemId()) {
+            case R.id.action_map:
+                Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.action_picture:
+                Toast.makeText(this, "Picture", Toast.LENGTH_SHORT).show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

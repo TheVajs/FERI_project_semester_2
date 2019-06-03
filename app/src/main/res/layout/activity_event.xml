@@ -57,7 +57,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.355" />
+        app:layout_constraintVertical_bias="0.19" />
 
     <!-- <ImageView
         android:id="@+id/selected1"
@@ -157,7 +157,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/_custom_button_style_shape"
         android:onClick="buttonOnClickSave"
-        android:text="Create"
+        android:text="@string/button_create"
         android:textColor="@color/_main_primary"
         android:textSize="@dimen/_font_size_med"
         app:layout_constraintBottom_toBottomOf="parent"
