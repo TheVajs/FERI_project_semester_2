@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         Intent data = new Intent(this.getBaseContext(), EventActivity.class);
         if(currentDate.getTime() != 0) data.putExtra("timeStamp", currentDate.getTime());
         this.startActivityForResult(data, MyApplication.EVENT_CODE);
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     @Override
@@ -245,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(MyApplication.TAG, "OBJECT: " + recyclerItems.get(position).toString());
             if(recyclerItems.get(position).getBackgroundColor() == COLOR_SELECTED) {
                 recyclerItems.get(position).setBackgroundColor(COLOR_NOT_SELECTED);
+                currentSelectedEventIndexses.remove((Object)position);
             }
             else {
                 recyclerItems.get(position).setBackgroundColor(COLOR_SELECTED);

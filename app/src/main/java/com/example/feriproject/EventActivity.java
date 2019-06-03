@@ -158,7 +158,7 @@ public class EventActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
     private void initializeDialog(long timeStamp) {
@@ -167,7 +167,7 @@ public class EventActivity extends AppCompatActivity {
         Log.d(MyApplication.TAG, "YEAR: " + calendar.get(Calendar.YEAR) + " | " + new Date(timeStamp).getYear());
         dialog = LinearDatePickerDialog.Builder.with(EventActivity.this)
                 .setYear(calendar.get(Calendar.YEAR))
-                .setMinYear(2015)
+                .setMinYear(calendar.get(Calendar.YEAR))
                 .setMaxYear(2025)
                 .setDialogBackgroundColor(getResources().getColor(R.color._main_secondary))
                 //.setPickerBackgroundColor(getResources().getColor(R.color._main_background))
@@ -178,7 +178,16 @@ public class EventActivity extends AppCompatActivity {
                 .setButtonCallback(new LinearDatePickerDialog.ButtonCallback() {
                     @Override
                     public void onPositive(DialogInterface dialog, int year, int month, int day) {
-                        Toast.makeText(EventActivity.this, "" + year + " - " + month + " - " + day, Toast.LENGTH_SHORT).show();
+                        try {
+                            String dateString = "";
+                            dateString += ("00" + day).substring((day+"").length());
+                            dateString += "." + ("00" + month).substring((month+"").length());
+                            dateString += "." + ("0000" + year).substring((year+"").length());
+                            Toast.makeText(EventActivity.this, dateString, Toast.LENGTH_SHORT).show();
+                            textDate.setText(dateString);
+                        } catch (Exception e) {
+                            Log.d(MyApplication.TAG, "initializeDialog: " + e.getMessage());
+                        }
                     }
 
                     @Override
