@@ -26,6 +26,10 @@ import net.steamcrafted.lineartimepicker.dialog.LinearDatePickerDialog;
 import net.steamcrafted.lineartimepicker.dialog.LinearTimePickerDialog;
 import net.steamcrafted.lineartimepicker.view.LinearDatePickerView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +38,7 @@ import java.util.List;
 
 public class EventActivity extends AppCompatActivity {
 
-    private TextView textName, textDate;
+    private TextView textName, textDate, eventCount;
     private ImageButton imageButtonPick;
     private ArrayList<ImageButton> imageButtons;
     private ArrayList<ImageView> selecteds;
@@ -49,7 +53,7 @@ public class EventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
-
+        eventCount = findViewById(R.id.text_event_count_event);
         textName = findViewById(R.id.textName);
         textDate = findViewById(R.id.textDate);
         imageButtonPick = findViewById(R.id.imageButtonPick);
@@ -90,17 +94,7 @@ public class EventActivity extends AppCompatActivity {
             button.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if(event.getActionMasked() == MotionEvent.ACTION_DOWN)
-                    {
-                        for (ImageButton select: imageButtons) {
-                            select.setPressed(false);
-                        }
-                        ((ImageButton)v).setPressed(true);
-                        ((ImageButton)v).startAnimation(MainActivity.scale);
-                        setColor = Integer.parseInt(((ImageButton)v).getTag().toString());
-
-                    }
-                    return true;
+                    return selectImageButton(v, event);
                 }
             });
         }
@@ -131,6 +125,20 @@ public class EventActivity extends AppCompatActivity {
         initializeDialog(tsLong);
     }
 
+    private boolean selectImageButton(View v,MotionEvent event) {
+        if(event.getActionMasked() == MotionEvent.ACTION_DOWN)
+        {
+            for (ImageButton select: imageButtons) {
+                select.setPressed(false);
+            }
+            v.setPressed(true);
+            v.startAnimation(MainActivity.scale);
+            setColor = Integer.parseInt(v.getTag().toString());
+
+        }
+        return true;
+    }
+
     public void buttonOnClickSave(View v) {
         try {
             Intent data = new Intent();
@@ -156,9 +164,27 @@ public class EventActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    public void onEvent(CustomMessageEvent event) {
+        Log.d(MyApplication.TAG, "onEvent(Event activity): " + event.toString());
+        eventCount.setText(String.format("(%s)",  event.getMessage()));
+    }
+
+    @Override
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     private void initializeDialog(long timeStamp) {

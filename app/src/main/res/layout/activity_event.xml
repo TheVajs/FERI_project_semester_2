@@ -53,11 +53,25 @@
         android:textColor="@color/_support_icon"
         android:textSize="@dimen/_font_size_tb"
         android:textStyle="bold"
+        android:hint="@string/_empty"
         app:layout_constraintBottom_toTopOf="@+id/textName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.19" />
+
+    <TextView
+        android:id="@+id/text_event_count_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/_empty"
+        android:textColor="@color/_support_icon"
+        android:textSize="@dimen/_font_size_sma"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <!-- <ImageView
         android:id="@+id/selected1"

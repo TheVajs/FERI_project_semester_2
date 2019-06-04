@@ -19,6 +19,7 @@ public class MyApplication extends Application {
 
     public static final String APP_ID = "ACTIVITY_EVENTS";
     public static final int EVENT_CODE = 1;
+    public static final int EVENT_CODE_PICTURE = 2;
     public static final String TAG = "log";
     public static Type eventType = new TypeToken<ArrayList<Event>>() {}.getType();
 

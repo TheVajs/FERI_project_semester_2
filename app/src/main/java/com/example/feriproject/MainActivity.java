@@ -1,7 +1,10 @@
 package com.example.feriproject;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.provider.CalendarContract;
+import android.provider.MediaStore;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -41,10 +44,12 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    /* dynamic registration */
+    IntentFilter intentFilter;
+    MyBootReceiver myReceiver;
+
     /* custom calender */
     public static final SimpleDateFormat myDateFormat;
-    public static Toast toast;
-
     private CompactCalendarView compactCalendarView;
 
     /* recycler view */
@@ -53,16 +58,17 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-
     private ArrayList<RecyclerItem> recyclerItems;
 
     /* simple UI elements */
     Button buttonSelectedDate;
     Button buttonRemove;
     Button buttonAll;
+    TextView eventCount;
     ImageButton buttonFloatinAdd;
     private static int COLOR_SELECTED;
     private static int COLOR_NOT_SELECTED;
+    private static int EVENT_COUNT;
     public static Animation scale;
     // private static DrawerLayout drawer; // https://www.youtube.com/watch?v=bjYstsO1PgI&t=4s
 
@@ -87,7 +93,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /* */
+        intentFilter = new IntentFilter();
+        intentFilter.addAction(MyBootReceiver.TAG);
+        myReceiver = new MyBootReceiver();
+
         /* EVENT BUS */
+        // help
+        // sticky events
+        // http://greenrobot.org/eventbus/documentation/configuration/sticky-events/
         EventBus.getDefault().register(this);
 
         /* BUILD UI */
@@ -96,10 +110,12 @@ public class MainActivity extends AppCompatActivity {
         buttonRemove = findViewById(R.id.buttonRemove);
         buttonFloatinAdd = findViewById(R.id.floatingAdd);
         buttonAll = findViewById(R.id.buttonAll);
+        eventCount = findViewById(R.id.text_event_count);
 
         buttonAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                onClickBroadcast(v);
                 showMonthEvents(currentFirstDateOfMonth);
             }
         });
@@ -124,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     currentSelectedEventIndexses = new ArrayList<>();
+                    EventBus.getDefault().postSticky(new CustomMessageEvent(EVENT_COUNT + ""));
                 }
             }
         });
@@ -145,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         data = app.getData();
         COLOR_SELECTED = getResources().getColor(R.color._recycler_selected);
         COLOR_NOT_SELECTED = getResources().getColor(R.color._recycler_unselected);
+        EVENT_COUNT = 0;
         currentDate = new Date(System.currentTimeMillis());
         currentFirstDateOfMonth = new Date(System.currentTimeMillis());
         initializeCalender();       // initialize for CUSTOM CALENDER
@@ -174,30 +192,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == MyApplication.EVENT_CODE) {
-            if (resultCode == RESULT_OK) {
+        switch (requestCode) {
+            case MyApplication.EVENT_CODE:
+                if (resultCode == RESULT_OK) {
+                    long ts = data.getLongExtra("timeStamp", -1);
+                    String name = data.getStringExtra("name");
+                    int colNumber = data.getIntExtra("color", -1);
+                    Log.d(MyApplication.TAG, "onActivityResult: results: " + ts + " " + colNumber);
 
-                long ts = data.getLongExtra("timeStamp", -1);
-                String name = data.getStringExtra("name");
-                int colNumber = data.getIntExtra("color", -1);
-                Log.d(MyApplication.TAG, "onActivityResult: results: " + ts + " " + colNumber);
-
-                if(ts != -1) {
-                    Event newEvent = new Event(getResources().getColor(colNumber), ts, name);
-                    compactCalendarView.addEvent(newEvent);
-                    addItem(RECYCLER_COUNT++, newEvent);
-                    saveItem(newEvent);
-                } else {
-                    Log.d(MyApplication.TAG, "onActivityResult: timeStamp was not received! " + ts + " " + colNumber);
+                    if(ts != -1) {
+                        Event newEvent = new Event(getResources().getColor(colNumber), ts, name);
+                        compactCalendarView.addEvent(newEvent);
+                        addItem(RECYCLER_COUNT++, newEvent);
+                        saveItem(newEvent);
+                    } else {
+                        Log.d(MyApplication.TAG, "onActivityResult: timeStamp was not received! " + ts + " " + colNumber);
+                    }
+                    EventBus.getDefault().postSticky(new CustomMessageEvent(EVENT_COUNT + ""));
                 }
-
-            }
+                break;
+            case MyApplication.EVENT_CODE_PICTURE:
+                if (resultCode == RESULT_OK) {
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    // imageView.setImageBitmap(bitmap);
+                }
+                break;
         }
     }
 
     @Subscribe
     public void onEvent(CustomMessageEvent event) {
-        Log.d(MyApplication.TAG, "onEvent(Main activity): ");
+        Log.d(MyApplication.TAG, "onEvent(Main activity): " + event.toString());
+        eventCount.setText(String.format("(%s)",  event.getMessage()));
     }
 
     /* RECYCLER VIEW FUNCTIONS */
@@ -285,6 +311,34 @@ public class MainActivity extends AppCompatActivity {
         for (Event in:currentEvents) addItem(RECYCLER_COUNT++, in);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(myReceiver, intentFilter);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(myReceiver);
+    }
+
+    public void onClickBroadcast(View view) {
+        Intent intent = new Intent();
+        intent.setAction(MyBootReceiver.TAG);
+        sendBroadcast(intent);
+    }
+
+    public void saveItem(Event event) {
+        data.addEvent(event);
+        app.saveMain();
+        EVENT_COUNT++;
+    }
+    public void deleteItem(Event event) {
+        data.deleteEvetn(event);
+        app.saveMain();
+        EVENT_COUNT--;
+    }
+
     private void initializeRecyclerView() {
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -354,22 +408,15 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < len; i++) {
                 compactCalendarView.addEvent(temp.get(i));
                 addItem(RECYCLER_COUNT++, temp.get(i));
+                EVENT_COUNT++;
             }
+            EventBus.getDefault().postSticky(new CustomMessageEvent(EVENT_COUNT + ""));
             Log.d(MyApplication.TAG, "initializeCalender: Data received from shared preference! Items: " + temp.size());
         } else {
             Log.d(MyApplication.TAG, "initializeCalender: No data is stored in shared preference!");
         }
     }
 
-
-    public void saveItem(Event event) {
-        data.addEvent(event);
-        app.saveMain();
-    }
-    public void deleteItem(Event event) {
-        data.deleteEvetn(event);
-        app.saveMain();
-    }
 
     /*private void initializeDrawer() {
         Log.d(MyApplication.TAG, "initializeDrawer: DONE!");
@@ -411,6 +458,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_picture:
                 Toast.makeText(this, "Picture", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
+                intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+                intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
+                startActivityForResult(intent, MyApplication.EVENT_CODE_PICTURE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
