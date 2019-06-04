@@ -1,10 +1,15 @@
 package com.example.feriproject;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.os.IBinder;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
+import android.renderscript.ScriptGroup;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -43,6 +48,15 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+
+    /* SERVICE */
+    // Don't attempt to unbind from the service unless the client has received some
+    // information about the service's state.
+    private boolean mShouldUnbind;
+
+    // To invoke the bound service, first make sure that this value
+    // is not null.
+    private MyService mBoundService;
 
     /* dynamic registration */
     IntentFilter intentFilter;
@@ -417,7 +431,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     /*private void initializeDrawer() {
         Log.d(MyApplication.TAG, "initializeDrawer: DONE!");
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -453,8 +466,13 @@ public class MainActivity extends AppCompatActivity {
         // help
         // https://www.youtube.com/watch?v=oh4YOj9VkVE&t=112s
         switch (item.getItemId()) {
-            case R.id.action_map:
-                Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
+            case R.id.action_start_service:
+                startService(new Intent(this, MyService.class));
+                doBindService();
+                return true;
+            case R.id.action_stop_service:
+                stopService(new Intent(this, MyService.class));
+                doUnbindService();
                 return true;
             case R.id.action_picture:
                 Toast.makeText(this, "Picture", Toast.LENGTH_SHORT).show();
@@ -466,5 +484,55 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  Because we have bound to a explicit
+            // service that we know is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            mBoundService = ((MyService.LocalBinder)service).getService();
+            Log.d(MyApplication.TAG, "Connected to service!");
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            // Because it is running in our same process, we should never
+            // see this happen.
+            mBoundService = null;
+            Log.d(MyApplication.TAG, "Disconnected from service!");
+        }
+    };
+
+    void doBindService() {
+        // Attempts to establish a connection with the service.  We use an
+        // explicit class name because we want a specific service
+        // implementation that we know will be running in our own process
+        // (and thus won't be supporting component replacement by other
+        // applications).
+        if (bindService(new Intent(MainActivity.this, MyService.class),
+                mConnection, Context.BIND_AUTO_CREATE)) {
+            mShouldUnbind = true;
+        } else {
+            Log.e(MyApplication.TAG, "Error: The requested service doesn't " +
+                    "exist, or this client isn't allowed access to it.");
+        }
+    }
+
+    void doUnbindService() {
+        if (mShouldUnbind) {
+            // Release information about the service's state.
+            unbindService(mConnection);
+            mShouldUnbind = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
     }
 }

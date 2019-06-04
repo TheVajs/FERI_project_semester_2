@@ -14,14 +14,19 @@
 
     <string name="button_create">CREATE</string>
 
+    <string name="local_service_started">Play music</string>
+    <string name="local_service_stop">Stop music</string>
+    <string name="local_service_label">Playing music in background!</string>
+
     <!-- DRAWER -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_maps">Maps</string>
-    <string name="action_picture">Picture</string>
+    <string name="action_start_service">Start music</string>
+    <string name="action_stop_service">Stop music</string>
+    <string name="action_picture">Take picture</string>
 
     <string name="menu_map">Map GPS</string>
     <string name="menu_camera">Take a photo</string>
