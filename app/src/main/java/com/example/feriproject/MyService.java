@@ -38,7 +38,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        Toast.makeText(this, "Background service start!", Toast.LENGTH_SHORT).show();
+        Log.i("LocalService", "Background service start!");
 
         myPlayer = MediaPlayer.create(this,R.raw.robin_schulz);
         //setting loop play to true

@@ -2,9 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.example.feriproject"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -31,6 +36,9 @@ dependencies {
     // custom
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'
-    implementation 'net.codecrafted:lineartimepicker:1.0.0'
+
+    implementation 'com.github.sundeepk:compact-calendar-view:3.0.0' // calendar
+    implementation 'net.codecrafted:lineartimepicker:1.0.0' // date picker
+    implementation 'com.github.yukuku:ambilwarna:2.0.1' // color picker
+    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
 }

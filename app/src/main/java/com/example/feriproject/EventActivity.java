@@ -2,29 +2,17 @@ package com.example.feriproject;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import net.steamcrafted.lineartimepicker.dialog.LinearDatePickerDialog;
-import net.steamcrafted.lineartimepicker.dialog.LinearTimePickerDialog;
-import net.steamcrafted.lineartimepicker.view.LinearDatePickerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -34,14 +22,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class EventActivity extends AppCompatActivity {
 
     private TextView textName, textDate, eventCount;
-    private ImageButton imageButtonPick;
     private ArrayList<ImageButton> imageButtons;
-    private ArrayList<ImageView> selecteds;
 
     public static final String DEFAUL_NAME = "New activity 1";
     private int setColor;
@@ -56,7 +43,7 @@ public class EventActivity extends AppCompatActivity {
         eventCount = findViewById(R.id.text_event_count_event);
         textName = findViewById(R.id.textName);
         textDate = findViewById(R.id.textDate);
-        imageButtonPick = findViewById(R.id.imageButtonPick);
+        ImageButton imageButtonPick = findViewById(R.id.imageButtonPick);
 
         imageButtons = new ArrayList<>();
         imageButtons.add((ImageButton) findViewById(R.id.imageButton1));
@@ -73,22 +60,6 @@ public class EventActivity extends AppCompatActivity {
 
             }
         });
-        /*
-        selecteds = new ArrayList<>();
-        selecteds.add((ImageView) findViewById(R.id.selected1));
-        selecteds.add((ImageView) findViewById(R.id.selected2));
-        selecteds.add((ImageView) findViewById(R.id.selected2)); */
-
-        /*for (ImageButton button: imageButtons) {
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for (ImageView select: selecteds) {
-                        select.setVisibility(View.INVISIBLE);
-                    }
-                }
-            });
-        } */
 
         for (ImageButton button: imageButtons) {
             button.setOnTouchListener(new View.OnTouchListener() {
@@ -190,7 +161,7 @@ public class EventActivity extends AppCompatActivity {
     private void initializeDialog(long timeStamp) {
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(new Date(timeStamp));
-        Log.d(MyApplication.TAG, "YEAR: " + calendar.get(Calendar.YEAR) + " | " + new Date(timeStamp).getYear());
+        Log.d(MyApplication.TAG, "YEAR: " + calendar.get(Calendar.YEAR));
         dialog = LinearDatePickerDialog.Builder.with(EventActivity.this)
                 .setYear(calendar.get(Calendar.YEAR))
                 .setMinYear(calendar.get(Calendar.YEAR))
@@ -222,5 +193,20 @@ public class EventActivity extends AppCompatActivity {
                     }
                 })
                 .build();
+    }
+
+    private void openColorPicker() { // TODO implement color picker
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, setColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                setColor = color;
+            }
+        });
+        colorPicker.show();
     }
 }

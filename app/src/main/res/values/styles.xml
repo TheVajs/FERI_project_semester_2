@@ -20,4 +20,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="myStyle">
+        <item name="colorControlNormal">@color/_field_white</item>
+        <item name="colorControlActivated">@color/_field_hint</item>
+    </style>
 </resources>

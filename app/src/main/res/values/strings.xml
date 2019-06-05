@@ -13,6 +13,7 @@
     <string name="_event_activity_field_date">Date</string>
 
     <string name="button_create">CREATE</string>
+    <string name="button_login">LOG IN</string>
 
     <string name="local_service_started">Play music</string>
     <string name="local_service_stop">Stop music</string>

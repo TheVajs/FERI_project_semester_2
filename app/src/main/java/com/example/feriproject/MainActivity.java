@@ -7,26 +7,17 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.os.IBinder;
-import android.provider.CalendarContract;
 import android.provider.MediaStore;
-import android.renderscript.ScriptGroup;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -43,7 +34,6 @@ import org.greenrobot.eventbus.Subscribe;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,9 +59,7 @@ public class MainActivity extends AppCompatActivity {
     /* recycler view */
     // HELP
     // https://www.youtube.com/watch?v=bhhs4bwYyhc&list=PLrnPJCHvNZuBtTYUuc5Pyo4V7xZ2HNtf4&index=4
-    private RecyclerView mRecyclerView;
     private MyAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<RecyclerItem> recyclerItems;
 
     /* simple UI elements */
@@ -88,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     /* MY DATA */
     private static int RECYCLER_COUNT = 0;
-    private static List<Event> currentEvents, currentSelectedEvents;
+    private static List<Event> currentEvents;
     private static List<Integer> currentSelectedEventIndexses;
     private static Date currentFirstDateOfMonth, currentDate;
 
@@ -97,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
     static  {
         currentEvents = new ArrayList<>();
-        currentSelectedEvents = new ArrayList<>();
         currentSelectedEventIndexses = new ArrayList<>();
         myDateFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
     }
@@ -354,6 +341,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeRecyclerView() {
+        RecyclerView.LayoutManager mLayoutManager;
+        RecyclerView mRecyclerView;
+
         mRecyclerView = findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
