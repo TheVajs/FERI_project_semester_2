@@ -35,12 +35,20 @@ public class LoginActivity extends AppCompatActivity {
     // https://www.youtube.com/watch?v=cjNW2noShM0
     // https://futurestud.io/tutorials/how-to-run-an-android-app-against-a-localhost-api
     //
+    // design help: https://sourcey.com/articles/beautiful-android-login-and-signup-screens-with-material-design
     // get ip win : ipconfig
     // connect to with phone to localhost : 192.168.43.194:8000
     // connect to emulator to localhost : 10.0.3.2:8000
 
-    public static final String BASE_URL = "http://10.0.3.2:8000";
-    public static final String ADD_URL = "/get-token";
+    // connect to my rest api
+    // 1. https://johan.driessen.se/posts/Accessing-an-IIS-Express-site-from-a-remote-computer/
+    // 2. https://stackoverflow.com/questions/9794985/config-error-this-configuration-section-cannot-be-used-at-this-path/12867753#12867753
+    // computer: http://localhost:51333/api/Auth/RequestToken
+    // emulator(Genymotion): http://10.0.3.2:51333/api/Auth/RequestToken
+    // phone to localhost: http://<IP of computer>:51333/api/Auth/RequestToken
+
+    public static final String BASE_URL = "http://10.0.3.2:51333";
+    public static final String ADD_TOKEN = "/api/Auth/RequestToken";
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     final class User {
@@ -98,19 +106,18 @@ public class LoginActivity extends AppCompatActivity {
 
             Gson gson = new Gson();
             String json = gson.toJson(new User(userName, passWord));
-            String response = doPostRequest(BASE_URL+ADD_URL, json);
+            String response = doPostRequest(BASE_URL+ADD_TOKEN, json);
 
-            Log.d(MyApplication.TAG, "login(" + BASE_URL + ADD_URL + "): " + response);
+            Log.d(MyApplication.TAG, "login(" + BASE_URL + ADD_TOKEN + "): " + response);
             Toast.makeText(this, "response: " + response, Toast.LENGTH_SHORT).show();
 
             //Bitmap bitmap = BitmapFactory.decodeStream(doGetRequesetImage(BASE_URL+"/image"));
-            response = doGetRequest(BASE_URL+"/api/news", response);
-            Log.d(MyApplication.TAG, "login(" + BASE_URL + "/api/news): " + response);
-
+            //response = doGetRequest(BASE_URL+"/api/news", response);
+            //Log.d(MyApplication.TAG, "login(" + BASE_URL + "/api/news): " + response);
         }
         catch (Exception e)
         {
-            Log.d(MyApplication.TAG, "login(" + BASE_URL + ADD_URL + "): " + e.getMessage() + " | ");
+            Log.d(MyApplication.TAG, "login(" + BASE_URL + ADD_TOKEN + "): " + e.getMessage() + " | ");
             e.printStackTrace();
         }
     }
@@ -143,6 +150,8 @@ public class LoginActivity extends AppCompatActivity {
 
         Response response = client.newCall(request).execute();
         return response.body().byteStream();
+
+        // Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
     }
 
 
