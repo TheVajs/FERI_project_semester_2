@@ -49,11 +49,11 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hint="@string/_empty"
         android:text="@string/_event_activity_title"
         android:textColor="@color/_support_icon"
         android:textSize="@dimen/_font_size_tb"
         android:textStyle="bold"
-        android:hint="@string/_empty"
         app:layout_constraintBottom_toTopOf="@+id/textName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,7 +132,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.64"
+        app:layout_constraintVertical_bias="0.54"
         app:srcCompat="@color/_calender_important" />
 
     <!-- <ImageView
@@ -177,7 +177,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButton2"
+        app:layout_constraintVertical_bias="0.69" />
 
     <ImageButton
         android:id="@+id/imageButtonPick"
@@ -186,11 +187,41 @@
         android:layout_marginEnd="8dp"
         android:background="@android:color/transparent"
         android:contentDescription="@string/_empty"
-        android:src="@drawable/ic_icon_event_rounded"
         app:layout_constraintBottom_toBottomOf="@+id/textDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textDate"
-        app:layout_constraintTop_toTopOf="@+id/textDate" />
+        app:layout_constraintTop_toTopOf="@+id/textDate"
+        app:srcCompat="@drawable/ic_icon_event_rounded" />
+
+    <ImageButton
+        android:id="@+id/imageButtonColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:alpha="0.9"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/_empty"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintStart_toEndOf="@+id/imageViewColor"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageButton2"
+        app:srcCompat="@drawable/ic_color_lens_black_24dp" />
+
+    <ImageView
+        android:id="@+id/imageViewColor"
+        android:layout_width="230dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/_button_dark"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonColor"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonColor"
+        app:layout_constraintHorizontal_bias="0.74"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonColor" />
 
 </android.support.constraint.ConstraintLayout>

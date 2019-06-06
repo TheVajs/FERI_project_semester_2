@@ -202,7 +202,14 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(MyApplication.TAG, "onActivityResult: results: " + ts + " " + colNumber);
 
                     if(ts != -1) {
-                        Event newEvent = new Event(getResources().getColor(colNumber), ts, name);
+                        int color = 0;
+                        try {
+                            color = getResources().getColor(colNumber);
+                        } catch (Exception e){
+                            Log.d(MyApplication.TAG, "invalid id of color!");
+                            color = colNumber;
+                        }
+                        Event newEvent = new Event(color, ts, name);
                         compactCalendarView.addEvent(newEvent);
                         addItem(RECYCLER_COUNT++, newEvent);
                         saveItem(newEvent);
@@ -467,9 +474,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_picture:
                 Toast.makeText(this, "Picture", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
-                intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-                intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
+                //intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
+                //intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
+                //intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
                 startActivityForResult(intent, MyApplication.EVENT_CODE_PICTURE);
                 return true;
         }

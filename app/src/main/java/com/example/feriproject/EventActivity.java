@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +32,7 @@ public class EventActivity extends AppCompatActivity {
     private ArrayList<ImageButton> imageButtons;
 
     public static final String DEFAUL_NAME = "New activity 1";
-    private int setColor;
+    public static int setColor;
 
     LinearDatePickerDialog dialog;
 
@@ -44,6 +45,7 @@ public class EventActivity extends AppCompatActivity {
         textName = findViewById(R.id.textName);
         textDate = findViewById(R.id.textDate);
         ImageButton imageButtonPick = findViewById(R.id.imageButtonPick);
+        ImageButton buttonColorPicker = findViewById(R.id.imageButtonColor);
 
         imageButtons = new ArrayList<>();
         imageButtons.add((ImageButton) findViewById(R.id.imageButton1));
@@ -60,6 +62,14 @@ public class EventActivity extends AppCompatActivity {
 
             }
         });
+
+        buttonColorPicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openColorPicker();
+            }
+        });
+
 
         for (ImageButton button: imageButtons) {
             button.setOnTouchListener(new View.OnTouchListener() {
@@ -195,7 +205,7 @@ public class EventActivity extends AppCompatActivity {
                 .build();
     }
 
-    private void openColorPicker() { // TODO implement color picker
+    private void openColorPicker() {
         AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, setColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onCancel(AmbilWarnaDialog dialog) {
@@ -204,7 +214,9 @@ public class EventActivity extends AppCompatActivity {
 
             @Override
             public void onOk(AmbilWarnaDialog dialog, int color) {
-                setColor = color;
+                EventActivity.setColor = color;
+                ImageView pickedColor = findViewById(R.id.imageViewColor);
+                pickedColor.setBackgroundColor(color);
             }
         });
         colorPicker.show();
