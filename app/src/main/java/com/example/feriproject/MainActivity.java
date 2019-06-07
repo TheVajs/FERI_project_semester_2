@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -27,15 +28,23 @@ import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -221,8 +230,33 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case MyApplication.EVENT_CODE_PICTURE:
                 if (resultCode == RESULT_OK) {
+                    /* CONVERT IMAGE TO STRING */
                     Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                    // imageView.setImageBitmap(bitmap);
+                    if(bitmap==null) {
+                        Log.d(MyApplication.TAG, "onActivityResult: bitmap null");
+                        return;
+                    }
+                    String encodedImage = MyHttp.bitmapToImage(bitmap);
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                /* UPLOAD IMAGE */
+                                Gson gson = new Gson();
+                                String json = gson.toJson(new ImageMessage("simon" + System.currentTimeMillis() + ".jpg", encodedImage));
+                                Log.d(MyApplication.TAG, "IMAGE " + encodedImage.substring(0, 10) + "  " + encodedImage.substring(encodedImage.length()-10, encodedImage.length()-1));
+                                String request = MyHttp.doPostRequest(MyHttp._UPLOADIMAGE, json, MyHttp.TOKEN);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.d(MyApplication.TAG, "sendImage(" + MyHttp._UPLOADIMAGE + "): " + e.getMessage() + " | ");
+                                //Toast.makeText(this, "Can't sent image", Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                        }
+                    }, 1000);
                 }
                 break;
         }
@@ -273,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 recyclerItems.get(position).setBackgroundColor(COLOR_SELECTED);
-                //currentSelectedEvents.add(recyclerItems.get(position).getEvent());
                 currentSelectedEventIndexses.add(position);
                 Log.d(MyApplication.TAG,"selectItem: " + position);
             }
@@ -388,17 +421,6 @@ public class MainActivity extends AppCompatActivity {
                 currentDate = dateClicked;
                 List<Event> currentEvents = compactCalendarView.getEvents(dateClicked);
                 if(currentEvents.size()> 0) showDayEvents(dateClicked);
-
-                /*List<Event> currentEvents = compactCalendarView.getEvents(date);
-                if(currentEvents != null && currentEvents.size() != 0) {
-                    initCustomToast(currentEvents.get(0).getData() + "");
-                }
-                else {
-                    initCustomToast(myDateFormat.format(date) + "");
-
-                    Event newEvent = new Event(Color.RED , dateClicked.getTime(), "My day");
-                    compactCalendarView.addEvent(newEvent);
-                } */
             }
 
             @Override
@@ -428,29 +450,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*private void initializeDrawer() {
-        Log.d(MyApplication.TAG, "initializeDrawer: DONE!");
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        Log.d(MyApplication.TAG, "initializeDrawer: DONE!");
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    } */
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -474,15 +473,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_picture:
                 Toast.makeText(this, "Picture", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                //intent.putExtra("android.intent.extras.CAMERA_FACING", android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT);
-                //intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1);
-                //intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true);
                 startActivityForResult(intent, MyApplication.EVENT_CODE_PICTURE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /* SERVICES */
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been

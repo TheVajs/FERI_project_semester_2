@@ -205,9 +205,8 @@
         android:contentDescription="@string/_empty"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/imageViewColor"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton2"
         app:srcCompat="@drawable/ic_color_lens_black_24dp" />
 
@@ -216,11 +215,10 @@
         android:layout_width="230dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:background="@color/_button_dark"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonColor"
         app:layout_constraintEnd_toStartOf="@+id/imageButtonColor"
-        app:layout_constraintHorizontal_bias="0.74"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageButtonColor" />
 
