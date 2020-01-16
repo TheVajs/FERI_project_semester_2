@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     /* SEND IMAGE TO SERVER */
                     Runnable runable = new Runnable(){
-                        public void run(){
+                            public void run(){
                             Log.d(MyApplication.TAG, "THREAD RUNNING!");
                             try
                             {

@@ -41,7 +41,7 @@
         android:layout_margin="16dp"
         android:background="@drawable/_custom_oval_style"
         android:elevation="10dp"
-        android:src="@drawable/ic_icon_add_rounded"
+        app:srcCompat="@drawable/ic_icon_add_rounded"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
